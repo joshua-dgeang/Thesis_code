@@ -1,0 +1,17 @@
+\contentsline {section}{\numberline {1}Introduction}{1}
+\contentsline {section}{\numberline {2}A summary of research progress}{1}
+\contentsline {subsection}{\numberline {2.1}Introduction}{1}
+\contentsline {subsection}{\numberline {2.2}Wrap-up for the 1st year's research}{1}
+\contentsline {subsection}{\numberline {2.3}Model modification}{2}
+\contentsline {subsection}{\numberline {2.4}Model evaluation: simulation and bankruptcy probabilities}{4}
+\contentsline {subsection}{\numberline {2.5}Cash management model with loans}{7}
+\contentsline {subsection}{\numberline {2.6}A heuristic method: one-step policy improvement}{9}
+\contentsline {subsection}{\numberline {2.7}Holistic model}{13}
+\contentsline {subsection}{\numberline {2.8}Approximate dynamic programming: TD method and eligibility trace method}{14}
+\contentsline {section}{\numberline {3}Overall research project}{14}
+\contentsline {subsection}{\numberline {3.1}Introduction}{14}
+\contentsline {subsection}{\numberline {3.2}Outline of the thesis}{14}
+\contentsline {subsection}{\numberline {3.3}Novelty and possible contributions}{14}
+\contentsline {section}{\numberline {4}Risk management}{14}
+\contentsline {section}{\numberline {5}Attendance of PhD level training courses and other related actions}{14}
+\contentsline {section}{\numberline {6}Time table for third year}{14}

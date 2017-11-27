@@ -1,0 +1,4 @@
+\beamer@sectionintoc {1}{Introduction}{3}{0}{1}
+\beamer@sectionintoc {2}{A two-assets cash management model}{35}{0}{2}
+\beamer@sectionintoc {3}{Cash management model with loan options}{45}{0}{3}
+\beamer@sectionintoc {4}{Future Research}{51}{0}{4}

@@ -1,0 +1,12 @@
+\contentsline {section}{\numberline {1}Introduction}{1}
+\contentsline {section}{\numberline {2}Overall research project}{3}
+\contentsline {subsection}{\numberline {2.1}Motivation and potential contribution}{3}
+\contentsline {subsection}{\numberline {2.2}Thesis structure}{4}
+\contentsline {subsection}{\numberline {2.3}Risk management}{5}
+\contentsline {section}{\numberline {3}Current progress}{5}
+\contentsline {subsection}{\numberline {3.1}Holistic model: a CM model in financial sector}{5}
+\contentsline {subsection}{\numberline {3.2}A two-assets CM model}{6}
+\contentsline {subsection}{\numberline {3.3}Cash management with loans/investment}{11}
+\contentsline {subsection}{\numberline {3.4}Approximate dynamic programming}{16}
+\contentsline {section}{\numberline {4}Research plan for next year}{19}
+\contentsline {section}{\numberline {5}Courses and activities}{19}

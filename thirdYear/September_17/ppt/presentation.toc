@@ -1,0 +1,4 @@
+\beamer@sectionintoc {1}{Introduction}{3}{0}{1}
+\beamer@sectionintoc {2}{Overall research project}{34}{0}{2}
+\beamer@sectionintoc {3}{Current progress}{42}{0}{3}
+\beamer@sectionintoc {4}{Research plans for next year}{63}{0}{4}

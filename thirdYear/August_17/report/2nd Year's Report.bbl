@@ -1,0 +1,27 @@
+\begin{thebibliography}{1}
+
+\bibitem{baccarin2002optimal}
+Stefano Baccarin.
+\newblock Optimal impulse control for cash management with quadratic
+  holding-penalty costs.
+\newblock {\em Decisions in Economics and Finance}, 25(1):19--32, 2002.
+
+\bibitem{bensoussan2005optimality}
+Alain Bensoussan, RH~Liu, and Suresh~P Sethi.
+\newblock Optimality of an (s,s) policy with compound poisson and diffusion
+  demands: A quasi-variational inequalities approach.
+\newblock {\em SIAM Journal on Control and Optimization}, 44(5):1650--1676,
+  2005.
+
+\bibitem{feng2010computational}
+Haolin Feng and Kumar Muthuraman.
+\newblock A computational method for stochastic impulse control problems.
+\newblock {\em Mathematics of Operations Research}, 35(4):830--850, 2010.
+
+\bibitem{sato2011stochastic}
+Kimitoshi Sato and Atsuo Suzuki.
+\newblock Stochastic cash management problem with double exponential jump
+  diffusion processes.
+\newblock {\em Operations Research and Its Applications}, 2011.
+
+\end{thebibliography}
