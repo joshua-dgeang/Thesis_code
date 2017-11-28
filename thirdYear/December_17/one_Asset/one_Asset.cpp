@@ -13,7 +13,7 @@ const double one_Asset :: SCR = 2.0;
 const double one_Asset :: discR = 1.0/1.02;
 const double one_Asset :: smallNum = 0.0001;
 const double one_Asset :: c_std = 2.5;
-const double one_Asset :: Action_size = 0.2;
+const double one_Asset :: Action_size = 0.1;
 const int one_Asset :: MaxC = 200;
 one_Asset :: one_Asset (double c):c_mean(c) {
 
