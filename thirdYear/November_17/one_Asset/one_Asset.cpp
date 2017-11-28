@@ -12,11 +12,12 @@ const double one_Asset :: TP_II = 0.2;
 const double one_Asset :: SCR = 2.0;
 const double one_Asset :: discR = 1.0/1.02;
 const double one_Asset :: smallNum = 0.0001;
-const double one_Asset :: c_mean = 0.0;
+const double one_Asset :: c_mean = 2.0;
 const double one_Asset :: c_std = 2.5;
-const double one_Asset :: Action_size = 1.0;
+const double one_Asset :: Action_size = 0.2;
 const int one_Asset :: MaxC = 100;
 one_Asset :: one_Asset () {
+
 	OldV = new double [MaxC+1];
 	NewV = new double [MaxC+1];
 	OptAction_index = new int [MaxC+1];
@@ -29,12 +30,15 @@ one_Asset :: one_Asset () {
 		OptAction_index[i] = 0;
 		//************************
 		double min, max;
+
 		min = (State_to_Value(i)-TF_I)/(1+TP_I);
 		if(min < 0)
 			min = 0;
 		max = (State_to_Value(MaxC) - State_to_Value(i)+TF_II)/(1-TP_II);
 		if(max < 0)
 			max = 0;
+
+
 		int ActionNumber = 1;
 		for(double action = -min; action <= max; action += Action_size){
 			ActionNumber++;
@@ -87,13 +91,9 @@ double one_Asset :: simulation (double * cash_s, double cash_net, double Action_
 	if(*cash_s >= 0)
 		cost_by_shortage = 0;
 	else{
-		//cout << "shortage amount: "<< abs(*cash_s)<<endl;
 		cost_by_shortage = SCR * abs(*cash_s);
 		*cash_s = 0.0;
 	}
-	//cout << "Cost by transaction: "<<cost_by_transaction<<endl;
-	//cout << "Cost by shortage: "<<cost_by_shortage<<endl;
-	//cout << "Cost by holding: "<<cost_by_holding<<endl;
 	return cash_net - cost_by_transaction - cost_by_shortage - cost_by_holding;
 	
 }
@@ -129,6 +129,7 @@ double one_Asset :: Qvalue (int s, double Action){
 		future = interpolation(cash_cal);
 		sum += (current + discR * future) *cash_prob[it];
 	}
+	
 	return sum;
 }
 double one_Asset :: interpolation(double x){
@@ -138,7 +139,10 @@ double one_Asset :: interpolation(double x){
 		x = 0;
 	xf = floor (x);
 	xc = ceil (x);
-	return (x - xf)/(xc - xf) * (OldV[xc] - OldV[xf]) + OldV[xf];
+	if (xf == xc)
+		return OldV[xc];
+	else 
+		return (x - xf)/(xc - xf) * (OldV[xc] - OldV[xf]) + OldV[xf];
 }
 bool one_Asset :: Comparison () {
 	maxdifference = 0.0;
@@ -155,6 +159,7 @@ bool one_Asset :: Comparison () {
 }
 void one_Asset :: Repetition () {
 	stagecounter = 1;
+
 	STP = 0;
 	while(STP != 1){
 		CalForOneStage();
@@ -182,6 +187,7 @@ void one_Asset :: OutPut() {
 	else;
 	for(int i = 0; i <= MaxC; ++i){
 		valueoutput << NewV[i] <<',';
+		//policyoutput << PolicyTable[i][OptAction_index[i]] << ',';
 		policyoutput << PolicyTable[i][OptAction_index[i]] << ',';
 	}
 	valueoutput<<"Finised..."<<endl;

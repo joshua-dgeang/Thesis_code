@@ -43,6 +43,7 @@ class one_Asset{
 		void OutPut();
 			ofstream valueoutput;
 			ofstream policyoutput;
+			ofstream logJournal;
 	
 
 };
