@@ -23,7 +23,6 @@ one_Asset :: one_Asset () {
 	OptAction_index = new int [MaxC+1];
 	totalNumber_of_Actions = new int [MaxC+1];
 	PolicyTable = new double * [MaxC+1];
-	//cout << "Here is fine."<<endl;
 	for( int i = 0; i <= MaxC; ++i){
 		OldV[i] = 0.0;
 		NewV[i] = 0.0;
@@ -139,10 +138,7 @@ double one_Asset :: interpolation(double x){
 		x = 0;
 	xf = floor (x);
 	xc = ceil (x);
-	if (xf == xc)
-		return OldV[xc];
-	else 
-		return (x - xf)/(xc - xf) * (OldV[xc] - OldV[xf]) + OldV[xf];
+		return (x - xf) * (OldV[xc] - OldV[xf]) + OldV[xf];
 }
 bool one_Asset :: Comparison () {
 	maxdifference = 0.0;
