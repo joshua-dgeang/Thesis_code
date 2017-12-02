@@ -42,7 +42,5 @@ class one_Asset{
 		double State_to_Value(int);
 		int Value_to_State(double);
 			ofstream policyoutput;
-	
-
 };
 #endif

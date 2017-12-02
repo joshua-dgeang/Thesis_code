@@ -16,7 +16,6 @@ const double one_Asset :: c_std = 2.5;
 const double one_Asset :: Action_size = 0.1;
 const int one_Asset :: MaxC = 200;
 one_Asset :: one_Asset (double c):c_mean(c) {
-
 	OldV = new double [MaxC+1];
 	NewV = new double [MaxC+1];
 	OptAction_index = new int [MaxC+1];
@@ -27,15 +26,12 @@ one_Asset :: one_Asset (double c):c_mean(c) {
 		NewV[i] = 0.0;
 		OptAction_index[i] = 0;
 		double min, max;
-
 		min = (State_to_Value(i)-TF_I)/(1+TP_I);
 		if(min < 0)
 			min = 0;
 		max = (State_to_Value(MaxC) - State_to_Value(i)+TF_II)/(1-TP_II);
 		if(max < 0)
 			max = 0;
-
-
 		int ActionNumber = 1;
 		for(double action = -min; action <= max; action += Action_size){
 			ActionNumber++;
@@ -125,7 +121,6 @@ double one_Asset :: Qvalue (int s, double Action){
 		future = interpolation(cash_cal);
 		sum += (current + discR * future) *cash_prob[it];
 	}
-	
 	return sum;
 }
 double one_Asset :: interpolation(double x){
