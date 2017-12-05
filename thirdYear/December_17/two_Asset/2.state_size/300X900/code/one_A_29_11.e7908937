@@ -1,0 +1,3 @@
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+/usr/shared_apps/packages/sge-8.1.8-1/default/spool/comp05-01/job_scripts/7908937: line 7: 11239 Aborted                 ./a.out
