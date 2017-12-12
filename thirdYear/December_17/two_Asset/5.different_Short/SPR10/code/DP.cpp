@@ -2,6 +2,7 @@
 #include "DP.hpp"
 #include "Hermite.cpp"
 #include "sim.cpp"
+#include <float.h>
 
 DP :: DP () : maxC(100), maxA(300), smallNum(0.0001), c_mean(0.0), c_std(2.5), discR(1.0/1.02), action_step_size(1.0){
 	OldV = new double * [maxC+1];
@@ -45,7 +46,7 @@ DP :: DP () : maxC(100), maxA(300), smallNum(0.0001), c_mean(0.0), c_std(2.5), d
 void DP :: CalForOneStage () {
 	for(int i = 0; i <= maxC; ++i)
 		for(int j = 0; j <= maxA; ++j){
-			best_value_s = -999.9;
+			best_value_s = -DBL_MAX;
 			best_policy_index = 0;
 	//cout << "Here is fine"<<i<<"+"<<j<<endl;
 			for(int policy_indx = 0; policy_indx < NumPolicy[i][j]; ++ policy_indx){
