@@ -3,7 +3,7 @@
 #include "Hermite.cpp"
 #include "sim.cpp"
 
-DP :: DP () : maxC(500), maxA(1500), smallNum(0.0001), c_mean(0.0), c_std(2.5), discR(1.0/1.02), action_step_size(1.0){
+DP :: DP () : maxC(500), maxA(4500), smallNum(0.0001), c_mean(0.0), c_std(2.5), discR(1.0/1.02), action_step_size(1.0){
 	OldV = new double * [maxC+1];
 	NewV = new double * [maxC+1];
 	OptPolicy_index = new int * [maxC+1];
