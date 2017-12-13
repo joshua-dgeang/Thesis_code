@@ -15,8 +15,8 @@ double TC(double act){
 		return 0;
 }
 int main () {
-	const int maxC = 100;
-	const int maxA = 300;
+	const int maxC = 200;
+	const int maxA = 900;
 	double assetAfter[maxC+1][maxA+1];
 	double cashAfter[maxC+1][maxA+1];
 	double Action[maxC+1][maxA+1];
@@ -27,25 +27,30 @@ int main () {
 			reader >> Action[i][j] >> t;
 		}
 	}
-
-
 	for (int i = 0; i <= maxC; ++i)
 		for(int j = 0; j <= maxA; ++j){
 			double cash = i*1.0;
 			double asset = j*1.0;
 			double act = Action[i][j];
-				cashAfter[i][j] = cash + act - TC(act);
-				assetAfter[i][j] = asset -  act;
+			if(act > 0){
+				cashAfter[i][j] = cash + abs(act);
+				assetAfter[i][j] = asset - abs(act) - TC(act);
+			}
+			else if (act < 0){
+				cashAfter[i][j] = cash - abs(act) - TC(act);
+				assetAfter[i][j] = asset + abs(act);
+			}
+			else {
+				cashAfter[i][j] = cash;
+				assetAfter[i][j] = asset;
+			}
 		}
-
 	ofstream writer_Cash("Cash.csv");
 	ofstream writer_Asset("Asset.csv");
-	
 	for(int i = 0; i <= maxC; ++i){
 		for(int j = 0; j <= maxA; ++j){
 			writer_Cash << cashAfter[i][j] << ',';
 			writer_Asset << assetAfter[i][j] << ',';
-
 		}
 		writer_Cash << '\n';
 		writer_Asset << '\n';
