@@ -1,10 +1,10 @@
 //DP.cpp
 #include "DP.hpp"
 #include "Hermite.cpp"
-#include "sim.cpp"
 #include <float.h>
+#include "sim.cpp"
 
-DP :: DP () : maxC(500), maxA(1500), smallNum(0.0001), c_mean(0.0), c_std(2.5), discR(1.0/1.02), action_step_size(0.1){
+DP :: DP () : maxC(500), maxA(4500), smallNum(0.0001), c_mean(-5.0), c_std(2.5), discR(1.0/1.02), action_step_size(0.2){
 	OldV = new double * [maxC+1];
 	NewV = new double * [maxC+1];
 	OptPolicy_index = new int * [maxC+1];
@@ -139,17 +139,32 @@ double DP :: interpolation (double x, double y) {
 }
 
 double DP :: Qvalue(int x, int y, double ACT){
+	
 	sum = 0;
 	for(vector<double>::size_type it = 0, end = cash_flow.size(); it < end; ++it){
 		cash_Q = State_Val_cash(x);
 		asset_Q = State_Val_asset(y);
-		cash_net = (asset_Q * 0.05 - 5.0) + cash_flow[it];
+		cash_net = cash_flow[it];
 		sim obj(&cash_Q, &asset_Q, cash_net, ACT);
 		current = obj.getCurrentReward();
 		future = interpolation(cash_Q, asset_Q);	
 		sum += (current + discR * future) * cash_prob[it];
+		/*
+		
+		if(x == 90 && y == 100 && ACT == 0){
+			cout << "ACT=0: "<< cash_net<<"*"<<"\t\t\t\tSUM= "<<sum<<" = "<< current<<":"<<future << endl;
+		}
+		if(x == 90 && y == 100 && ACT == -50){
+			cout <<"_________"<<endl;
+			cout << "ACT=-50: "<< cash_net<<"*"<<"\t\t\t\tSUM= "<<sum<<" = "<< current<<":"<<future << endl;
+		}
+		*/
+
+
 	}
+
 	return sum;
+
 }
 void DP :: Repitition() {
 	stage_counter = 1;
