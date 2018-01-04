@@ -3,10 +3,10 @@
 #include <fstream>
 using namespace std;
 const int MaxC = 200;
-const double TF_I = 0.5;
-const double TF_II = 1.0;
-const double TP_I = 0.05;
-const double TP_II=0.1;
+const double TF_I = 0.0;
+const double TF_II = 0.0;
+const double TP_I = 0.1;
+const double TP_II=0.2;
 const double startingPoint = 0;
 const double SCR = 2.0;
 const int MaxStage = 200;

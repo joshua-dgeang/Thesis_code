@@ -5,10 +5,10 @@
 #include <cstdlib>
 using namespace std;
 const double one_Asset :: ReturnRate = 0.05;
-const double one_Asset :: TF_I = 1.5;
-const double one_Asset :: TF_II = 3;
-const double one_Asset :: TP_I = 0.15;
-const double one_Asset :: TP_II = 0.3;
+const double one_Asset :: TF_I = 0.0;//K-****
+const double one_Asset :: TF_II = 0.0;//K+
+const double one_Asset :: TP_I = 0.15;//k-****
+const double one_Asset :: TP_II = 0.30;//k+
 const double one_Asset :: SCR = 2.0;
 const double one_Asset :: discR = 1.0/1.02;
 const double one_Asset :: smallNum = 0.0001;
