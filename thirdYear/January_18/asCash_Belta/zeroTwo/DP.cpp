@@ -4,7 +4,7 @@
 #include "sim.cpp"
 #include <float.h>
 
-DP :: DP () : maxC(160), maxA(500), discrete(0.5), smallNum(0.0001), c_mean(0.0), c_std(5.0), discR(1.0/1.02), action_step_size(0.5), returnRate(0.05){
+DP :: DP () : maxC(500), maxA(1500), discrete(0.2), smallNum(0.0001), c_mean(0.0), c_std(5.0), discR(1.0/1.02), action_step_size(0.2), returnRate(0.05){
 	OldV = new double * [maxC+1];
 	NewV = new double * [maxC+1];
 	OptPolicy_index = new int * [maxC+1];
