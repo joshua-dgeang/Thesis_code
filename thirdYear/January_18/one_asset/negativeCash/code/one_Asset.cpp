@@ -83,6 +83,8 @@ double one_Asset :: simulation (double * cash_s, double cash_net, double Action_
 	else{
 		cost_by_shortage = SCR * abs(*cash_s);
 	}
+	*cash_s -= cost_by_shortage;
+
 	return cash_net - cost_by_transaction - cost_by_shortage - cost_by_holding;
 	
 }

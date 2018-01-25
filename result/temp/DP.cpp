@@ -165,11 +165,6 @@ double DP :: Qvalue(int x, int y, double ACT){
 		future = interpolation(cash_Q, asset_Q);	
 		sum += (current + discR * future) * cash_prob[it];
 
-		/*
-	if(x == 0 && y == 244 && ACT == 3){
-		cout << cash_flow[it] << ":"<<current<<" &&&& "<<future << endl;
-	}
-	*/
 	}
 	return sum;
 }

@@ -2,7 +2,7 @@
 int main () {
 	ofstream policy("Policy.csv");
 	
-	for(double aa = -15.0; aa <= 15.0; aa+=0.1){
+	for(double aa = -25.0; aa <= 25.05; aa+=0.1){
 		cout << "$$$$$$$$$$$$$$$$$$$$$$ "<<aa<<" $$$$$$$$$$$$$$$$$$$"<<endl;
 		//policy << "aa:"<<aa<<',';
 		one_Asset obj(aa);

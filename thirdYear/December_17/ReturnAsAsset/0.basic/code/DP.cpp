@@ -4,7 +4,7 @@
 #include <float.h>
 #include "sim.cpp"
 
-DP :: DP () : maxC(100), maxA(300), smallNum(0.0001), c_mean(-5.0), c_std(2.5), discR(1.0/1.02), action_step_size(1.0){
+DP :: DP () : maxC(100), maxA(300), smallNum(0.0001), c_mean(-5.0), c_std(5.0), discR(1.0/1.02), action_step_size(0.1){
 	OldV = new double * [maxC+1];
 	NewV = new double * [maxC+1];
 	OptPolicy_index = new int * [maxC+1];
@@ -38,7 +38,6 @@ DP :: DP () : maxC(100), maxA(300), smallNum(0.0001), c_mean(-5.0), c_std(2.5), 
 	}
 	//********************************** END OF INITIALIZATION **************************************
 	HermiteReader();
-	Repitition();
 	Repitition();
 	TestOutPut();
 	
@@ -139,10 +138,6 @@ double DP :: interpolation (double x, double y) {
 }
 
 double DP :: Qvalue(int x, int y, double ACT){
-		if(x == 90 && y == 100 && ACT == 0){
-			cout << "*********************************"<<endl;
-		}
-	
 	sum = 0;
 	for(vector<double>::size_type it = 0, end = cash_flow.size(); it < end; ++it){
 		cash_Q = State_Val_cash(x);
