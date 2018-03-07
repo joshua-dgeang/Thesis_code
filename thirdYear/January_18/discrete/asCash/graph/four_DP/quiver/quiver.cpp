@@ -5,7 +5,7 @@ using namespace std;
 double State_to_Value(int state, double discrete);
 int Value_to_State(double value, int Boundary, double discrete);
 int main () {
-	const double DISC = 4.0;
+	const double DISC = 4;
 	const double maxC_value = 100;
 	const double maxA_value = 300;
 	const double TF_I = 1.0;
@@ -25,20 +25,22 @@ int main () {
 	ifstream Reader("Policy.csv");
 	ofstream cmove("C_move.csv");
 	ofstream amove("A_move.csv");
+	ofstream cmove_up("C_move_up.csv");
+	ofstream amove_up("A_move_up.csv");
 	ofstream Table_cmove("C_move_table.csv");
 	ofstream Table_amove("A_move_table.csv");
 	ofstream Gray("Gray.csv");
 	Table_cmove << "NAME"<<',';
 	Table_amove << "NAME"<<',';
 	for(int j = 0; j <= maxA; ++j){
-		Table_cmove << "Asset_"<<State_to_Value(j,0.2)<<',';
-		Table_amove << "Asset_"<<State_to_Value(j,0.2)<<',';
+		Table_cmove << "Asset_"<<State_to_Value(j,DISC)<<',';
+		Table_amove << "Asset_"<<State_to_Value(j,DISC)<<',';
 	}
 	Table_cmove << endl;
 	Table_amove << endl;
 	for(int i = 0; i <= maxC; ++i){
-		Table_cmove << "Cash_"<<State_to_Value(i, 0.2)<<',';
-		Table_amove << "Cash_"<<State_to_Value(i, 0.2)<<',';
+		Table_cmove << "Cash_"<<State_to_Value(i, DISC)<<',';
+		Table_amove << "Cash_"<<State_to_Value(i, DISC)<<',';
 
 		for(int j = 0; j <= maxA; ++j){
 			Reader >> Action >> t;
@@ -55,6 +57,8 @@ int main () {
 				a_move = State_to_Value(j,DISC) - Action - TransactionCost;
 				C_justMove = Action + returnRate * State_to_Value(j,DISC);
 				A_justMove = - Action - TransactionCost;
+				cmove << c_move << endl;
+				amove << a_move << endl;
 				
 				grey = 1;
 
@@ -66,9 +70,9 @@ int main () {
 				C_justMove = Action - TransactionCost + returnRate * State_to_Value(j,DISC);
 				A_justMove = - Action;
 				grey = 1;
+				cmove_up << c_move << endl;
+				amove_up << a_move << endl;
 			}
-			cmove << c_move << endl;
-			amove << a_move << endl;
 			Table_cmove << C_justMove << ',';
 			Table_amove << A_justMove << ',';
 			Gray << grey << ',';
