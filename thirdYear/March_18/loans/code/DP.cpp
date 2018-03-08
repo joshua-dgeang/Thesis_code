@@ -56,16 +56,13 @@ DP :: DP ():maxC_value(100),maxA_value(300),discrete(1.0),smallNum(0.0001),c_mea
 		}
 	}
 //End of initialisation...
-	
+	HermiteReader();
+	Repitition (); 
+	TestOutPut();
 }
 
 
-
-
-
-
  double DP :: State_Val(int state){
-	
          return state * discrete;        
  }                                   
 int DP :: Val_State_cash(double value, int maxState){
@@ -77,8 +74,6 @@ int DP :: Val_State_cash(double value, int maxState){
 	else
 		return tempState;
 }
-
-
 
 int DP :: FindAllAction(int z, int x, int y, double* min, double* max){
         count_cur = 1;
@@ -114,4 +109,241 @@ int DP :: FindAllAction(int z, int x, int y, double* min, double* max){
         }
         return count_cur;
 }                                                               
-				
+
+void DP :: HermiteReader() {                                                  
+        Hermite reader (c_mean, c_std);                                       
+        for(vector<double> :: size_type it = 0, end = reader.demand.size(); it < end; ++it){
+                cash_flow.push_back(reader.demand[it]);                       
+                cash_prob.push_back(reader.probability[it]);                  
+        }                                                                     
+}                                                                             
+
+double DP :: interpolation (int loanstate, bool loanaction, double x, double y) {
+	if(loanstate >= 1){
+        	if(x > State_Val(maxC)) x = State_Val(maxC);
+        	if(y > State_Val(maxA)) y = State_Val(maxA);
+        	if(x < 0) x = 0;
+        	if(y < 0) y = 0;
+        	scf=floor(x/discrete);
+        	saf=floor(y/discrete);
+        	scc=ceil(x/discrete);
+        	sac=ceil(y/discrete);
+
+        	VA = OldV[loanstate-1][scf][saf];
+        	VB = OldV[loanstate-1][scc][saf];
+        	VC = OldV[loanstate-1][scc][sac];
+        	VD = OldV[loanstate-1][scf][sac];
+        	VF = (x/discrete-scf) * (VB - VA) + VA;
+        	VE = (x/discrete-scf) * (VC - VD) + VD;
+        	VG = (y/discrete-saf) * (VE -VF) + VF;
+        	return VG;
+	}
+	else if (loanaction == 0){
+		if (loanstate != 0){
+			cerr << "Error in interpolation!!!"<<endl;
+			exit(EXIT_FAILURE);
+		}
+        	if(x > State_Val(maxC)) x = State_Val(maxC);
+        	if(y > State_Val(maxA)) y = State_Val(maxA);
+        	if(x < 0) x = 0;
+        	if(y < 0) y = 0;
+        	scf=floor(x/discrete);
+        	saf=floor(y/discrete);
+        	scc=ceil(x/discrete);
+        	sac=ceil(y/discrete);
+
+        	VA = OldV[loanstate][scf][saf];
+        	VB = OldV[loanstate][scc][saf];
+        	VC = OldV[loanstate][scc][sac];
+        	VD = OldV[loanstate][scf][sac];
+        	VF = (x/discrete-scf) * (VB - VA) + VA;
+        	VE = (x/discrete-scf) * (VC - VD) + VD;
+        	VG = (y/discrete-saf) * (VE -VF) + VF;
+        	return VG;
+	}
+	else {
+		if (loanstate != 0 || loanaction != 1){
+			cerr << "Error_II in interpolation!!!"<<endl;
+			exit(EXIT_FAILURE);
+		}
+        	if(x > State_Val(maxC)) x = State_Val(maxC);
+        	if(y > State_Val(maxA)) y = State_Val(maxA);
+        	if(x < 0) x = 0;
+        	if(y < 0) y = 0;
+        	scf=floor(x/discrete);
+        	saf=floor(y/discrete);
+        	scc=ceil(x/discrete);
+        	sac=ceil(y/discrete);
+        	VA = OldV[maxLoanTime][scf][saf];
+        	VB = OldV[maxLoanTime][scc][saf];
+        	VC = OldV[maxLoanTime][scc][sac];
+        	VD = OldV[maxLoanTime][scf][sac];
+        	VF = (x/discrete-scf) * (VB - VA) + VA;
+        	VE = (x/discrete-scf) * (VC - VD) + VD;
+        	VG = (y/discrete-saf) * (VE -VF) + VF;
+        	return VG;
+	}
+}                                                                
+void DP :: Repitition() {          
+        stage_counter = 1;         
+        STP = 0;                   
+        while(STP != 1 ){          
+                CalForOneStage();  
+                STP = Comparison();
+                update();          
+                stage_counter++;   
+        }                          
+}                                  
+
+void DP :: update(){ 
+	for(int l = 0; l <= maxLoanTime; ++l)
+        	for(int i = 0; i <= maxC; ++i)          
+                	for(int j = 0; j <= maxA; ++j){ 
+                        	OldV[l][i][j] = NewV[l][i][j];
+                }                               
+}                                               
+
+bool DP :: Comparison () {
+        maxdifference = 0.0;
+	for(int l = 0; l <= maxLoanTime; ++l)
+        	for (int i = 0; i <= maxC; ++i)
+                	for(int j = 0; j <= maxA; ++j){
+                        	difference = abs (NewV[l][i][j] - OldV[l][i][j]);
+                        	if (maxdifference < difference){
+                                	maxdifference = difference;
+                        }
+                }
+        cout << "We are at stage: "<<stage_counter << endl;
+        cout << "The maxdifference is: "<<maxdifference << endl;
+        if(maxdifference <= smallNum)
+                return 1;
+        else
+                return 0;
+}                                                                  
+void DP::CalForOneStage() {
+	//Companies without any debt:
+	for(int i = 0; i <= maxC; ++i)
+		for(int j = 0; j <= maxA; ++j){
+			//Best value taking loan:
+			best_value_takingloan = -DBL_MAX;
+			best_policy_index_takingloan = 0;
+			loan_option_calforone = 1;
+			for(int policy_index = 0; policy_index < NumPolicy[0][i][j]; ++ policy_index){
+				temp_Qvalue = Qvalue(0, i, j, PolicyTable[0][i][j][policy_index], loan_option_calforone);
+				if(best_value_takingloan < temp_Qvalue){
+					best_value_takingloan = temp_Qvalue;
+					best_policy_index_takingloan = policy_index;
+				}
+			}
+			//Best value NOT taking loan:
+			best_value_s = -DBL_MAX;
+			best_policy_index = 0;
+			loan_option_calforone = 0;
+			for(int policy_index = 0; policy_index < NumPolicy[0][i][j]; ++ policy_index){
+				temp_Qvalue = Qvalue(0, i, j, PolicyTable[0][i][j][policy_index], loan_option_calforone);
+				if(best_value_s < temp_Qvalue){
+					best_value_s = temp_Qvalue;
+					best_policy_index = policy_index;
+				}
+			}
+			//Comparing taking loan and not taking loan, record the result:
+			if(best_value_s >= best_value_takingloan){
+				LoanAction[i][j] = 0;
+				NewV[0][i][j] = best_value_s;
+				OptPolicy_index[0][i][j] = best_policy_index;
+			}
+			else{
+				LoanAction[i][j] = 1;
+				NewV[0][i][j] = best_value_takingloan;
+				OptPolicy_index[0][i][j] = best_policy_index_takingloan;
+			}
+		}
+
+	//Company with debt:
+	for(int l = 1; l <= maxLoanTime; ++l)
+		for(int i = 0; i <= maxC; ++i)
+			for(int j = 0; j <= maxA; ++j){
+				best_value_s=-DBL_MAX;
+				best_policy_index = 0;
+				loan_option_calforone = 0;
+				for(int policy_index = 0; policy_index < NumPolicy[l][i][l]; ++ policy_index){
+					temp_Qvalue = Qvalue (l, i, j, PolicyTable[l][i][j][policy_index], loan_option_calforone);
+					if(best_value_s < temp_Qvalue){
+						best_value_s = temp_Qvalue;
+						best_policy_index = policy_index;
+					}
+				}
+				NewV[l][i][j] = best_value_s;
+				OptPolicy_index[l][i][j] = best_policy_index;
+			}
+}
+double DP :: Qvalue(int z, int x, int y, double cash_policy_q, bool loantaking_q){
+	sum = 0;
+	if(z >= 1){
+		loan_outflow = loanPayment;
+		loan_income = 0;
+	}
+	else if (loantaking_q == 1){
+		loan_outflow = 0;
+		loan_income = loanSize;
+	}
+	else{
+		loan_income = 0;
+		loan_outflow = 0;
+	};
+	for(vector<double>:: size_type it = 0, end =cash_flow.size(); it < end; ++it){
+		cash_Q = State_Val(x);
+		asset_Q = State_Val(y);
+		cash_net = returnRate * asset_Q + cash_flow[it] + loan_income - loanSize;
+		sim obj(&cash_Q, &asset_Q, cash_net, cash_policy_q);
+		current = obj.getCurrentReward();
+		future = interpolation(z, loantaking_q, cash_Q, asset_Q);
+		sum += (current + discR * future) * cash_prob[it];
+	}
+	return sum;
+}
+void DP::TestOutPut() {
+	policy_OP.open("Policy.csv");
+	value_OP.open("Value.csv");
+	loan_OP.open("Loan.csv");
+	for(int i = 0; i <= maxC; ++i){
+		for(int j = 0; j <= maxA; ++j){
+			policy_OP << PolicyTable[i][j][OptPolicy_index[0][i][j]] << ',';
+			value_OP << NewV[0][i][j] << ',';
+			loan_OP << LoanAction[i][j] << ',';
+		}
+		policy_OP << endl;
+		value_OP << endl;
+		loan_OP << endl;
+	}
+}
+DP :: ~ DP () {
+	for (int l = 0; l <= maxLoanTime; ++l){
+		for(int i = 0; i <= maxC; ++i){
+			for (int j = 0; j <= maxA; ++j){
+				delete [] PolicyTable[l][i][j];
+			}
+			delete [] OldV[l][i];
+			delete [] NewV[l][i];
+			delete [] NumPolicy[l][i];
+			delete [] OptPolicy_index[l][i];
+			delete [] PolicyTable [l][i];
+		}
+		delete [] OldV[l];
+		delete [] NewV[l];
+		delete [] NumPolicy[l];
+		delete [] OptPolicy_index[l];
+		delete [] PolicyTable[l];
+	}
+	delete [] OldV;
+	delete [] NewV;
+	delete [] NumPolicy;
+	delete [] OptPolicy_index;
+	delete [] PolicyTable;
+
+	for(int i = 0; i <= maxC; ++ i){
+		delete [] LoanAction [i];
+	}
+	delete [] LoanAction;
+}
+
