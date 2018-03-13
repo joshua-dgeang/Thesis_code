@@ -4,91 +4,79 @@
 #include "sim.cpp"
 #include <float.h>
 
-DP :: DP () : maxC_value(100), maxA_value(300), discrete(1.0), smallNum(0.0001), c_mean(-5.0), c_std(5.0), discR(1.0/1.02), action_step_size(1), returnRate(0.05){
+DP :: DP () : maxC_value(100), maxA_value(300), discrete(1.0), smallNum(0.0001), c_mean(-5.0), c_std(5.0), discR(1.0/1.02), action_step_size(1), returnRate(0.05), loanSize(40), loanInterest(0.04), loanTime(30){
+	loanPay = loanSize * (loanInterest * pow(1+loanInterest,loanTime)) / (pow(1+loanInterest,loanTime)-1);
+
+	ReadP.open("Policy.csv");
+	ReadV.open("Value.csv");
+	if(!ReadP.is_open() || !ReadV.is_open()){
+		cerr << "Couldn't open the files"<<endl;
+		exit(EXIT_FAILURE);
+	}
+
 	maxC = maxC_value/discrete;
 	maxA = maxA_value/discrete;
 	OldV = new double * [maxC+1];
 	NewV = new double * [maxC+1];
-	OptPolicy_index = new int * [maxC+1];
-	NumPolicy = new int * [maxC+1];
-	PolicyTable = new double ** [maxC+1];
+	OptP = new double * [maxC+1];
+	RP = new double * [maxC+1];
+	RV = new double * [maxC+1];
+	loanAction = new bool * [maxC+1];
+	Comparison = new double * [maxC+1];
+
 	for(int i = 0; i <= maxC; ++i){
 		OldV[i] = new double [maxA+1];
 		NewV[i] = new double [maxA+1];
-		OptPolicy_index[i] = new int [maxA+1];
-		NumPolicy[i] = new int [maxA+1];
-		PolicyTable[i] = new double * [maxA+1];
+		OptP[i] = new double [maxA+1];
+		RP[i] = new double [maxA+1];
+		RV[i] = new double [maxA+1];
+		loanAction[i] = new bool [maxA+1];
+		Comparison[i] = new double [maxA+1];
+
 		
 		for(int j = 0; j <= maxA; ++j){
-			OldV [i][j] = 0.0;
-			NewV[i][j] = 0.0;
-			OptPolicy_index[i][j] = 5005;
-			NumPolicy[i][j] = 5005;
-			min_ini = 0;
-			max_ini = 0;
-			counter_ini = FindAllAction(i,j,&min_ini, &max_ini);//This function will return the total number of possible actions given the state i,j. Meanwhile it will set mini_ini to the max amount of money could be transfered from cash to asset and set max_ini to the max amount of money could be transfered from asset to cash;
-			PolicyTable[i][j] = new double [counter_ini];
-			NumPolicy[i][j] = counter_ini;
-			PolicyTable[i][j][0] = 0;
-			min_ini = -min_ini;
-			for(int h = 1; h < counter_ini; ++h){
-				if(min_ini >= smallNum || min_ini <= -smallNum)
-					PolicyTable[i][j][h] = min_ini;
-                min_ini += action_step_size;
-			}
+			ReadP >> RP[i][j] >>t;
+			ReadV >> RV[i][j] >>t;
+			OldV [i][j] = RV[i][j];
+			NewV[i][j] = RV[i][j];;
+			OptP[i][j] = 5005;
+
 		}
 	}
 	//********************************** END OF INITIALIZATION **************************************
 	HermiteReader();
 	Repitition();
-	TestOutPut();
-	
 }
-void DP :: CalForOneStage () {
+void DP :: CalForOneStage (bool T, bool P) {
 	for(int i = 0; i <= maxC; ++i)
 		for(int j = 0; j <= maxA; ++j){
-			best_value_s = -DBL_MAX;
-			best_policy_index = 0;
+			best_policy = 0;
+			best_value_s = Qvalue(i, j, 0, T, P);
 	//cout << "Here is fine"<<i<<"+"<<j<<endl;
-			for(int policy_indx = 0; policy_indx < NumPolicy[i][j]; ++ policy_indx){
+			min_ini = 0;
+			max_ini = 0;
+			FindAllAction(i,j,&min_ini, &max_ini, T, P);
 
-				
-				
-				temp_Qvalue = Qvalue(i, j, PolicyTable[i][j][policy_indx]);
-				
-				if(best_value_s < temp_Qvalue){
-					best_value_s = temp_Qvalue;
-					best_policy_index = policy_indx;
+			for(double policy_x = -min_ini; policy_x <= max_ini; policy_x+=action_step_size){
+				if(policy_x < smallNum && policy_x > -smallNum){
+				}
+				else{
+					temp_Qvalue = Qvalue(i, j, policy_x, T, P);
+					if(best_value_s < temp_Qvalue){
+						best_value_s = temp_Qvalue;
+						best_policy = policy_x;
+					}
 				}
 			}
-
 			NewV[i][j] = best_value_s;
-			OptPolicy_index[i][j] = best_policy_index;
+			OptP[i][j] = best_policy;
 		}
 }
-bool DP :: Comparison () {
-	maxdifference = 0.0;
-	for (int i = 0; i <= maxC; ++i)
-		for(int j = 0; j <= maxA; ++j){
-			difference = abs (NewV[i][j] - OldV[i][j]);
-			if (maxdifference < difference){
-				maxdifference = difference; 
-			}
-		}
+void DP :: FindAllAction(int x, int y, double* min, double* max, bool ToN, bool PoN){
 
-	cout << "We are at stage: "<<stage_counter << endl; 
-	cout << "The maxdifference is: "<<maxdifference << endl;
-	if(maxdifference <= smallNum)
-		return 1;
-	else 
-		return 0;
-
-}
-int DP :: FindAllAction(int x, int y, double* min, double* max){
-	count_cur = 1;
 	cash_cur = State_Val_cash(x);
 	asset_cur = State_Val_asset(y);
-	cash_cur += returnRate * asset_cur;
+	cash_cur = cash_cur +  returnRate * asset_cur + ToN * loanSize - PoN * loanPay;
 	A_cur = State_Val_cash(maxC) - cash_cur;
 	B_cur = (asset_cur - sim::TF_II)/(1+sim::TP_II);
 	C_cur = State_Val_asset(maxA) - asset_cur;
@@ -107,12 +95,6 @@ int DP :: FindAllAction(int x, int y, double* min, double* max){
 	if(*min <0)
 		*min = 0;
 	else;
-
-	for(double m = -*min; m<= *max; m+=action_step_size){
-		if(m >= smallNum || m <= -smallNum)
-			count_cur++;
-	}
-	return count_cur;
 }
 void DP :: HermiteReader() {
 	Hermite reader (c_mean, c_std);
@@ -141,14 +123,14 @@ double DP :: interpolation (double x, double y) {
 	return VG;
 }
 
-double DP :: Qvalue(int x, int y, double ACT){
+double DP :: Qvalue(int x, int y, double ACT, bool T, bool P){
 	sum = 0;
 	for(vector<double>::size_type it = 0, end = cash_flow.size(); it < end; ++it){
 		cash_Q = State_Val_cash(x);
 		asset_Q = State_Val_asset(y);
-		cash_net = returnRate*asset_Q + cash_flow[it];
+		cash_net = returnRate*asset_Q + cash_flow[it] + loanSize * T - loanPay * P;
 		sim obj(&cash_Q, &asset_Q, cash_net, ACT);
-		current = obj.getCurrentReward();
+		current = obj.getCurrentReward() + loanSize * T - loanPay * P;
 		future = interpolation(cash_Q, asset_Q);	
 		sum += (current + discR * future) * cash_prob[it];
 	}
@@ -156,13 +138,40 @@ double DP :: Qvalue(int x, int y, double ACT){
 }
 void DP :: Repitition() {
 	stage_counter = 1;
-	STP = 0;
-	while(STP != 1 ){
-		CalForOneStage();
-		STP = Comparison();
+	while(stage_counter <= loanTime){
+		CalForOneStage(0,0);
 		update();
+		cout << "Stage: "<<stage_counter <<endl;
 		stage_counter++;
 	}
+	CalForOneStage(0,0);
+	for(int i = 0; i <= maxC; ++i)
+		for(int j = 0; j <= maxA; ++j){
+			Comparison[i][j] = NewV[i][j];
+			NewV[i][j] = RV[i][j];
+			OldV[i][j] = RV[i][j];
+		}
+	stage_counter = 1;
+	while(stage_counter <= loanTime){
+		CalForOneStage(0,1);
+		update();
+		cout << "Stage: "<<stage_counter <<endl;
+		stage_counter++;
+	}
+	CalForOneStage(1,0);
+
+	for(int i = 0; i <= maxC; ++i)
+		for(int j = 0; j <= maxA; ++j){
+			if(NewV[i][j] > Comparison[i][j]+smallNum){
+				loanAction[i][j] = 1;
+			}	
+			else{
+				loanAction[i][j] = 0;
+				NewV[i][j] = Comparison[i][j];
+				OptP[i][j] = RP[i][j];
+			}
+		}
+	TestOutPut();
 }
 double DP :: State_Val_cash(int c){
 	return c * discrete;
@@ -171,15 +180,21 @@ double DP :: State_Val_asset(int a){
 	return a * discrete;
 }
 void DP :: TestOutPut(){
-	policy_OP.open("Policy.csv");
-	value_OP.open("Value.csv");
+	policy_OP.open("Policy_loan.csv");
+	value_OP.open("Value_loan.csv");
+	loan.open("loanAction.csv");
+	comp.open("Comparison.csv");
 	for(int i = 0; i <= maxC; ++i){
 		for(int j = 0; j <= maxA; ++j){
-			policy_OP << PolicyTable[i][j][OptPolicy_index[i][j]]<<',';
+			policy_OP << OptP[i][j]<<',';
 			value_OP << NewV[i][j]<<',';
+			loan << loanAction[i][j] << ',';
+			comp << Comparison[i][j] << ',';
 		}
 		policy_OP << endl;
 		value_OP << endl;
+		loan << endl;
+		comp << endl;
 	}
 }
 void DP :: update(){
@@ -206,18 +221,19 @@ int DP :: Val_State_asset(double a){
 }
 DP :: ~ DP () {
 	for (int i = 0; i <= maxC; ++i){
-		for(int j = 0; j <= maxA; ++j){
-			delete [] PolicyTable[i][j];
-		}
 		delete [] OldV[i];
 		delete [] NewV[i];
-		delete [] NumPolicy[i];
-		delete [] OptPolicy_index[i];
-		delete [] PolicyTable[i];
+		delete [] OptP[i];
+		delete [] RP[i];
+		delete [] RV[i];
+		delete [] Comparison[i];
+		delete [] loanAction[i];
 	}
 	delete [] OldV;
 	delete [] NewV;
-	delete [] NumPolicy;
-	delete [] OptPolicy_index;
-	delete [] PolicyTable;
+	delete [] OptP;
+	delete [] RP;
+	delete [] RV;
+	delete [] Comparison;
+	delete [] loanAction;
 }
